@@ -23,3 +23,17 @@ app.post("/api-cars", (request, response) => {
     console.log("Car Model:", model);
     response.send("Car details received successfully!");
 })
+
+// Connection of server.js to the database
+const mongoose = require("mongoose");;
+mongoose.connect("mongodb://localhost:27017/newdatabase", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+
+.then(() => {
+    console.log("Connected to MongoDB successfully!");
+})
+.catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+});
