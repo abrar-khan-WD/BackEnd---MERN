@@ -15,7 +15,7 @@ const blog = require('./routes/blog');
 app.use("/api/v1", blog);
 
 // DB Connection
-const connectDB = require ("./config/db");
+const connectDB = require ("./config/database");
 connectDB();
 
 // Start the server

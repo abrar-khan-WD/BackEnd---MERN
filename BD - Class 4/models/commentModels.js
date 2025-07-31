@@ -20,3 +20,4 @@ const commentSchema = new mongoose.Schema({
 
 // Export the comment model
 module.exports = mongoose.model("Comment", commentSchema);
+// This model can be used to create, read, update, and delete comments in the database
