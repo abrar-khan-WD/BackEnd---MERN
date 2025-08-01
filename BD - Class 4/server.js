@@ -11,6 +11,7 @@ app.use(express.json());
 // Routes to handle requests
 const blog = require('./routes/blog');
 
+
 // mount the blog routes
 app.use("/api/v1", blog);
 
