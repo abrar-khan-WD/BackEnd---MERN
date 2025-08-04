@@ -12,7 +12,7 @@ exports.createPost = async (req, res) => {
             body
         })
         // save the post to the database
-        const savedPost = await Post.create(post);
+        const savedPost = await post.save();
 
         res.status(201).json({
             message: "Post created successfully",
