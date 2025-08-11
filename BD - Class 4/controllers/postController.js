@@ -32,7 +32,7 @@ exports.createPost = async (req, res) => {
 // Get All Posts
 exports.getAllPosts = async (req, res) => {
     try{
-        const posts = await Post.find().populate('comments').exec();
+        const posts = await Post.find().populate('likes').populate('comments').exec();
         res.status(200).json({
             success: true,
             posts: posts
