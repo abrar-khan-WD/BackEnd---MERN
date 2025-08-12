@@ -1,5 +1,8 @@
 const brcypt = require('bcrypt');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
+const e = require('express');
+require('dotenv').config();
 
 // Sign Up Route Handler
 exports.signup = async(req, res) => {
@@ -16,6 +19,7 @@ exports.signup = async(req, res) => {
                 message: "User already exists"
             });
         }
+
         // Hash the pasword
         let hashedPassword;
         try{
@@ -34,21 +38,90 @@ exports.signup = async(req, res) => {
             password: hashedPassword,
             role: role || 'user' // Default to 'user' if no role is provided
         })
-        return res.status(201).json({
+        res.status(201).json({
             success: true,
             message: "User created successfully",
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            }
-        })
+            user
+        });
     }
     catch(err){
         return res.status(500).json({
             success: false,
             message: "User creation failed, Please try again",
+            error: err.message
+        });
+    }
+}
+
+
+// Login
+
+exports.login = async(req, res) => {
+    try{
+        // Fetch Email and Password from Body
+        const {email, password} = req.body;
+        // Validate Email and Password
+        if(!email || !password){
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required"
+            });
+        }
+        //Check if user exists
+        const user = await User.findOne({
+            email : email
+        })
+        if(!user){
+            return res.status(401).json({
+                success: false,
+                message: "User not registered"
+            })
+        }
+        // Validate Password
+        const isMatch = await brcypt.compare(password, user.password);
+        let payload = {
+            email : user.email,
+            role : user.role,
+            id : user._id
+        }
+        if(isMatch){
+            //password matched
+            let token = jwt.sign(payload, process.env.JWT_SECRET,{
+                expiresIn: "1hr"
+            })
+            console.log(user);
+            user.token = token;
+            await user.save(); // Save the token in the database
+            console.log(user);
+            user.password = undefined; // Remove password from user object
+            console.log(user);
+            // Creation of Cookie
+            res.cookie("codegyaani", token, {
+                expires: new Date(Date.now() + 3600000),
+                httpOnly: true
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: "Login successful",
+                token: user.token,
+                cookies : {
+                    token: token
+                },
+                user: user
+            });
+        }
+        if(!isMatch){
+            return res.status(403).json({
+                success: false,
+                message: "Invalid email or password"    
+            })
+        }
+    }
+    catch(err){
+        return res.status(500).json({
+            success: false,
+            message: "Login failed, Please try again",
             error: err.message
         });
     }
