@@ -1,7 +1,7 @@
 const brcypt = require('bcrypt');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
-const e = require('express');
+const express = require('express');
 require('dotenv').config();
 
 // Sign Up Route Handler
@@ -60,7 +60,7 @@ exports.login = async(req, res) => {
     try{
         // Fetch Email and Password from Body
         const {email, password} = req.body;
-        // Validate Email and Password
+        // Validate Email and Password if user have entered
         if(!email || !password){
             return res.status(400).json({
                 success: false,
@@ -68,7 +68,7 @@ exports.login = async(req, res) => {
             });
         }
         //Check if user exists
-        const user = await User.findOne({
+        let  user = await User.findOne({
             email : email
         })
         if(!user){
@@ -90,8 +90,9 @@ exports.login = async(req, res) => {
                 expiresIn: "1hr"
             })
             console.log(user);
+            // Convert to Object
+            user = user.toObject();
             user.token = token;
-            await user.save(); // Save the token in the database
             console.log(user);
             user.password = undefined; // Remove password from user object
             console.log(user);
