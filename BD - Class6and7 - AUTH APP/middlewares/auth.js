@@ -6,8 +6,11 @@ require('dotenv').config();
 
 exports.auth = (req, res, next) => {
     try{
+     
+        console.log("Cookie used for fetching", req.cookies.codegyaani);
+        // console.log("Body uses for fetching token", req.body.token);
         // Get the token from request body
-        const token = req.body.token;
+        const token = req.cookies.codegyaani
         if(!token){
             return res.status(401).json({
                 success: false,
@@ -30,15 +33,16 @@ exports.auth = (req, res, next) => {
 
     }
     catch(err) {
+        console.error("[AUTH MIDDLEWARE ERROR]", err);
         return res.status(500).json({
-            success: false,
-            message : "Something went wrong"
+            success: false,         
+            message : "Something went wrong",
+            error: err.message  
         })
     }
 }
 
-
-// Authorization 
+// sTUDENT Authorization 
 exports.isStudent = (req, res, next) => {
     try{
          if(req.user.role !== 'student') {
@@ -74,4 +78,4 @@ exports.isAdmin = (req, res, next) => {
         })
     }
    next();
-}   
+}

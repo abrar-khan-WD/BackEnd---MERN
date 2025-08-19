@@ -7,6 +7,10 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
+// Import Cookie Parser
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 // Import database connection
 const {connectDB} = require('./config/database');
 connectDB();
