@@ -36,7 +36,10 @@ exports.localFileUpload = async (req, res) => {
 async function uploadFileCloudinary(file, folder,quality) {
   try {
     // image and video
-   
+    const options = { folder: folder,  resource_type: "auto" };
+    if(quality){
+        options.quality = quality;
+    }
     const result = await cloudinary.uploader.upload(file.tempFilePath, options);
     return result;
   } catch (err) {
